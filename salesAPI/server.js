@@ -1,3 +1,13 @@
+/*********************************************************************************
+ * * WEB422 – Assignment 1
+ * * I declare that this assignment is my own work in accordance with Seneca Academic Policy.
+ * * No part of this assignment has been copied manually or electronically from any other source
+ * * (including web sites) or distributed to other students.
+ * *
+ * * Name: Badal Sarkar       Student ID: 137226189          Date: January 13, 2020
+ * * Heroku Link: https://secret-cliffs-75145.herokuapp.com/api/sales?page=1&perPage=5
+ * ********************************************************************************/ 
+
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
