@@ -21,7 +21,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-const HTTP_PORT = process.env.PORT || 8080;
+const HTTP_PORT = process.env.PORT || 8000;
 
 // ************* API Routes
 // POST /api/sales (NOTE: This route must read the contents of the request body)
