@@ -4,6 +4,21 @@ let page=1;
 const perPage=10;
 
 
+
+//on document ready
+$(function(){
+    loadSaleData();
+    displaySaleModal();
+    activatePagination();
+});
+
+
+
+
+
+
+
+//Sale table template
 const saleTableTemplate= _.template(`
     <% _.forEach(saleData, function(data){ %>
         <tr data-id= "<%- data["_id"] %>" >
@@ -15,18 +30,19 @@ const saleTableTemplate= _.template(`
     <% }); %>
 `);
 
+
+
+
+
+
+//Sale modal template
 const saleModelBodyTemplate= _.template(`
-    <% _.forEach(saleData, function(data){ %>
-        <%- data.total=0 %>
-        <% _.forEach(data.items, function(item){ %>
-            <%- data.total= _.add(data.total,item.price) %>
-        <% }); %>
         <h4>Customer</h4>
-        <strong>email:</strong> <%- data.customer.email %> <br>
-        <strong>age:</strong> <%- data.customer.age %> <br>
-        <strong>satisfaction:</strong> <%- data.customer.satisfaction %>/5
+        <strong>email:</strong> <%- customer.email %> <br>
+        <strong>age:</strong> <%- customer.age %> <br>
+        <strong>satisfaction:</strong> <%- customer.satisfaction %>/5
         <br><br>
-        <h4>Items:$<%- data.total.toFixed(2) %> </h4>
+        <h4>Items: $<%- total.toFixed(2) %> </h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -36,7 +52,7 @@ const saleModelBodyTemplate= _.template(`
                     </tr>
                 </thead>
                 <tbody>
-                    <% _.forEach(data.items, function(item){ %>
+                    <% _.forEach(items, function(item){ %>
                             <tr>
                                 <td> <%- item.name %> </td>
                                 <td> <%- item.quantity %> </td>
@@ -45,7 +61,6 @@ const saleModelBodyTemplate= _.template(`
                     <% }); %>
                 </tbody>
             </table>
-        <% }); %>
 `);
 
 
@@ -69,17 +84,63 @@ async function loadSaleData(){
     //so call the saleTAbleTemplate with the data
     if(saleData.length>0){
         //create template
-        let saleTemplate= saleTableTemplate(saleData);
-        $("#sale-table tbody").html(saleTableTemplate);
+        $("#sale-table tbody").html(saleTableTemplate(saleData));
         $("#current-page").html(page);
     }
 }
 
 
-$(function(){
-    loadSaleData();
-});
 
 
+//function to display saleModal window on click event
+//parameter: none
+//process: 1. attach click event
+//         2. get the data-id on click
+//         3. calculate total sale amount and attach
+//              as new property to the clicked object
+//         4. generate saleModal template
+//         5. attach template to DOM
+function displaySaleModal(){
+    let saleId;
+    let clickedSale;
+    $("#sale-table tbody").on("click", "tr", function(){
+        saleId=$(this).attr("data-id");
+        clickedSale=saleData.find(data=>data["_id"]==saleId);
+        if(clickedSale && clickedSale.items){
+            $(".modal-title").html(`Sale: ${saleId}`);
+            clickedSale.total=0;
+            clickedSale.items.forEach(item=>clickedSale.total+=(item.price*item.quantity));
+            $(".modal-body").html(saleModelBodyTemplate(clickedSale));
+            $("#sale-modal").modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+        }
+        else{
+            $(".modal-title").html("Error loading sale data");
+        }
+    });
+
+}
+
+
+
+//pagination function
+function activatePagination(){
+    //previous page button
+    $("#previous-page").on('click',function(){
+        if(page>0){
+            page--;
+            loadSaleData();
+        }
+    });
+
+
+    //next page button
+    $("#next-page").on('click', function(){
+        page++;
+        loadSaleData();
+    });
+}
 
 
